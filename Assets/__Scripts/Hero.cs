@@ -7,7 +7,7 @@ public class Hero : MonoBehaviour {
 
     [Header("Set in Inspector")]
     // These fields control the movement of the ship
-    public float speed = 30;
+    public float speed = 60;
     public float rollMult = -45;
     public float pitchMult = 30;
     public float gameRestartDelay = 2f;
@@ -53,8 +53,8 @@ public class Hero : MonoBehaviour {
 
         // Change transform.position based on the axes
         Vector3 pos = transform.position;
-        pos.x += xAxis * speed * Time.deltaTime;
-        pos.y += yAxis * speed * Time.deltaTime;
+        pos.x += xAxis * speed * Time.deltaTime * 2f;
+        pos.y += yAxis * speed * Time.deltaTime * 2f;
         transform.position = pos;
 
         // Rotate the ship to make it feel more dynamic
