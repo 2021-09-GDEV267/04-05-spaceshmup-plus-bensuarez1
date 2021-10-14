@@ -46,6 +46,8 @@ public class Weapon : MonoBehaviour {
     public GameObject collar;
     public float lastShotTime; // Time last shot was fired
     private Renderer collarRend;
+    public float damageOnHit;
+    public float delayBetweenShots;
 
     private void Start()
     {
