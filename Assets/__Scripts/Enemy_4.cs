@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Part is another serializable data storage class just like WeaponDefinition
@@ -30,8 +31,15 @@ public class Enemy_4 : Enemy {
     private float timeStart; // Birth time for this Enemy_4
     private float duration = 4; // Duration of movement
 
+    [Header("Set Dynamically")]
+    public Text scoreGT;
+
     private void Start()
     {
+        GameObject scoreGO = GameObject.Find("ScoreCounter");
+        scoreGT = scoreGO.GetComponent<Text>();
+        scoreGT.text = "0";
+
         // There is already an initial position chosen by Main.SpawnEnemy()
         // so add it to points as the initial p0 & p1
         p0 = p1 = pos;
@@ -195,6 +203,14 @@ public class Enemy_4 : Enemy {
                     Main.S.ShipDestroyed(this);
                     // Destroy this Enemy
                     Destroy(this.gameObject);
+                    int score = int.Parse(scoreGT.text);
+                    score += 100;
+                    scoreGT.text = score.ToString();
+
+                    if (score > HighScore.score)
+                    {
+                        HighScore.score = score;
+                    }
                 }
                 Destroy(other); // Destroy the ProjectileHero
                 break;

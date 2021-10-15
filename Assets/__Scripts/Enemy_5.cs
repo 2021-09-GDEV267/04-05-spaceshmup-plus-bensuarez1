@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class Parts
@@ -28,9 +29,16 @@ public class Enemy_5 : Enemy
     private float timeStart; // Birth time for this Enemy_5
     private float duration = 1; // Duration of movement
 
+    [Header("Set Dynamically")]
+    public Text scoreGT;
+    
     // Start is called before the first frame update
     private void Start()
     {
+        GameObject scoreGO = GameObject.Find("ScoreCounter");
+        scoreGT = scoreGO.GetComponent<Text>();
+        scoreGT.text = "0";
+        
         // There is already an initial position chosen by Main.SpawnEnemy()
         // so add it to points as the initial p0 & p1
         p0 = p1 = pos;
@@ -191,6 +199,14 @@ public class Enemy_5 : Enemy
                     Main.S.ShipDestroyed(this);
                     // Destroy this Enemy
                     Destroy(this.gameObject);
+                    int score = int.Parse(scoreGT.text);
+                    score += 300;
+                    scoreGT.text = score.ToString();
+
+                    if (score > HighScore.score)
+                    {
+                        HighScore.score = score;
+                    }
                 }
                 Destroy(other); // Destroy the ProjectileHero
                 break;

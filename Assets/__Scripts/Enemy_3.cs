@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemy_3 : Enemy { // Enemy_3 extends Enemy
     // Enemy_3 will move following a Bezier curve, which is a linear
@@ -12,8 +13,15 @@ public class Enemy_3 : Enemy { // Enemy_3 extends Enemy
     public Vector3[] points;
     public float birthTime;
 
+    [Header("Set Dynamically")]
+    public Text scoreGT;
+
     private void Start()
     {
+        GameObject scoreGO = GameObject.Find("ScoreCounter");
+        scoreGT = scoreGO.GetComponent<Text>();
+        scoreGT.text = "0";
+
         points = new Vector3[3]; // Initialize points
 
         // The start position has already been set by Main.SpawnEnemy()
@@ -58,5 +66,32 @@ public class Enemy_3 : Enemy { // Enemy_3 extends Enemy
         p01 = ((1 - u) * points[0]) + (u * points[1]);
         p12 = ((1 - u) * points[1]) + (u * points[2]);
         pos = ((1 - u) * p01) + (u * p12);
+    }
+
+    private void OnCollisionEnter(Collision coll)
+    {
+        GameObject other = coll.gameObject;
+        switch (other.tag)
+        {
+            case "ProjectileHero":
+                bool allDestroyed = true;
+                if (allDestroyed) // If it IS completely destroyed...
+                {
+                    // ...tell the Main singleton that this ship was destroyed
+                    Main.S.ShipDestroyed(this);
+                    // Destroy this Enemy
+                    Destroy(this.gameObject);
+                    int score = int.Parse(scoreGT.text);
+                    score += 100;
+                    scoreGT.text = score.ToString();
+
+                    if (score > HighScore.score)
+                    {
+                        HighScore.score = score;
+                    }
+                }
+                Destroy(other); // Destroy the ProjectileHero
+                break;
+        }
     }
 }

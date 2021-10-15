@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemy_2 : Enemy {
 
@@ -15,8 +16,15 @@ public class Enemy_2 : Enemy {
     public Vector3 p1;
     public float birthTime;
 
+    [Header("Set Dynamically")]
+    public Text scoreGT;
+
     private void Start()
     {
+        GameObject scoreGO = GameObject.Find("ScoreCounter");
+        scoreGT = scoreGO.GetComponent<Text>();
+        scoreGT.text = "0";
+
         // Pick any point on the left side of the screen
         p0 = Vector3.zero;
         p0.x = -bndCheck.camWidth - bndCheck.radius;
@@ -58,5 +66,32 @@ public class Enemy_2 : Enemy {
 
         // Interpolate the two linear interpolation points
         pos = ((1 - u) * p0) + (u * p1);
+    }
+
+    private void OnCollisionEnter(Collision coll)
+    {
+        GameObject other = coll.gameObject;
+        switch (other.tag)
+        {
+            case "ProjectileHero":
+                bool allDestroyed = true;
+                if (allDestroyed) // If it IS completely destroyed...
+                {
+                    // ...tell the Main singleton that this ship was destroyed
+                    Main.S.ShipDestroyed(this);
+                    // Destroy this Enemy
+                    Destroy(this.gameObject);
+                    int score = int.Parse(scoreGT.text);
+                    score += 100;
+                    scoreGT.text = score.ToString();
+
+                    if (score > HighScore.score)
+                    {
+                        HighScore.score = score;
+                    }
+                }
+                Destroy(other); // Destroy the ProjectileHero
+                break;
+        }
     }
 }

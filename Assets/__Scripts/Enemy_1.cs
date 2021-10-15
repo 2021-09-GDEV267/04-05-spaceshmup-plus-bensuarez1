@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // Enemy_1 extends the Enemy class
 public class Enemy_1 : Enemy {
@@ -15,9 +16,16 @@ public class Enemy_1 : Enemy {
     private float x0; // The initial x value of pos
     private float birthTime;
 
-	// Use this for initialization
-	void Start()
+    [Header("Set Dynamically")]
+    public Text scoreGT;
+
+    // Use this for initialization
+    void Start()
     {
+        GameObject scoreGO = GameObject.Find("ScoreCounter");
+        scoreGT = scoreGO.GetComponent<Text>();
+        scoreGT.text = "0";
+
         // Set x0 to the initial x position of Enemy_1
         x0 = pos.x;
 
@@ -43,5 +51,32 @@ public class Enemy_1 : Enemy {
         base.Move();
 
         // print (bndCheck.isOnScreen);
+    }
+
+    private void OnCollisionEnter(Collision coll)
+    {
+        GameObject other = coll.gameObject;
+        switch (other.tag)
+        {
+            case "ProjectileHero":
+                bool allDestroyed = true;
+                if (allDestroyed) // If it IS completely destroyed...
+                {
+                    // ...tell the Main singleton that this ship was destroyed
+                    Main.S.ShipDestroyed(this);
+                    // Destroy this Enemy
+                    Destroy(this.gameObject);
+                    int score = int.Parse(scoreGT.text);
+                    score += 100;
+                    scoreGT.text = score.ToString();
+
+                    if (score > HighScore.score)
+                    {
+                        HighScore.score = score;
+                    }
+                }
+                Destroy(other); // Destroy the ProjectileHero
+                break;
+        }
     }
 }
